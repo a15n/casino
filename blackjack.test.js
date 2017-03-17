@@ -80,3 +80,13 @@ test('check results of checkTable() when player = 10 & 6 & 6, dealer = 10 & 8', 
   expect(dealerPoints).toBe(18);
   expect(isWinner).toBe(false);
 });
+
+// test('check results of checkTable() when player = 9 & ace & ace, dealer = 10 & 8', () => {
+//   const game = easyInitNewBlackjackInstance([9, 14, 14], [10, 8]);
+
+//   const { playerPoints, dealerPoints, isWinner } = game.checkTable(true);
+
+//   expect(playerPoints).toBe(21);
+//   expect(dealerPoints).toBe(18);
+//   expect(isWinner).toBe(true);
+// });

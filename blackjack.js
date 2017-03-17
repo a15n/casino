@@ -1,8 +1,9 @@
 /*
 TODO
-  dealer must continue 'hitting' until >18 I think
+  dealer must continue 'hitting' until >18 I think and add documentation for what 14 means
   need ability to convert aces from 11 to 1 conditionally (force it if over 21), do it progressively
   console.log better welcome screen, instructions, and reset messaging
+  add 'q' to quit command line interface
   rename variables to with _someName if "private" but still needed to expose for testing (maybe find other ways)
   add internal controls so user can't deal twice, hit before deal, hit after stay, hit beyond limit, etc
   add cumulative numbers to the console. ex: 'You are showing three and four and nine (16)'
@@ -46,8 +47,10 @@ var Blackjack = function(passedPlayerHand, passedDealerHand) {
 
   // PUBLIC VARIABLES
   this.checkTable = function(playerHasStayed) {
-    const playerPoints = playerHand.reduce((n, c) => n + c.blackjackValue, 0);
-    const dealerPoints = dealerHand.reduce((n, c) => n + c.blackjackValue, 0);
+    const getBlackjackPoints = (arr) => arr.reduce((n, c) => n + c.blackjackValue, 0);
+
+    const playerPoints = getBlackjackPoints(playerHand);
+    const dealerPoints = getBlackjackPoints(dealerHand);
     let isWinner = null;
     if (playerPoints > 21) {
       log('You lose');
