@@ -1,7 +1,5 @@
 /*
 TODO
-  dealer must continue 'hitting' until >18 I think and add documentation for what 14 means
-  need ability to convert aces from 11 to 1 conditionally (force it if over 21), do it progressively
   console.log better welcome screen, instructions, and reset messaging
   add 'q' to quit command line interface
   rename variables to with _someName if "private" but still needed to expose for testing (maybe find other ways)
@@ -13,8 +11,9 @@ const log = (str) => {
     ${str}`);
 };
 
-var Blackjack = function(passedPlayerHand, passedDealerHand) {
 
+
+var Blackjack = function(passedPlayerHand, passedDealerHand) {
   /*
     VALUES 
     cards 2-10 are worth their face value
@@ -45,25 +44,32 @@ var Blackjack = function(passedPlayerHand, passedDealerHand) {
 
   // PUBLIC VARIABLES
   this.checkTable = function(playerHasStayed) {
-    const getBlackjackPoints = (arr) => arr.reduce((n, c) => n + c.blackjackValue, 0);
-
-    const playerPoints = getBlackjackPoints(playerHand);
-    const dealerPoints = getBlackjackPoints(dealerHand);
+    const playerPoints = this.getBlackjackPoints(playerHand.map(c => c.blackjackValue));
+    const dealerPoints = this.getBlackjackPoints(dealerHand.map(c => c.blackjackValue));
     let isWinner = null;
     let isGameOver = false;
-    
-    if (playerPoints > 21) {
+    let finalMessage;
+
+    if (dealerPoints > 21) {
+      isWinner = true;  
+      isGameOver = true;
+      finalMessage = 'YOU WIN! Dealer went over 21!'
+    } else if (playerPoints > 21) {
       isWinner = false;
       isGameOver = true;
+      finalMessage = 'YOU LOSE! You went over 21!'
     } else if (playerHasStayed && playerPoints > dealerPoints) {
       isWinner = true;
       isGameOver = true;
+      finalMessage = 'YOU WIN! You have more points than the dealer!'
     } else if (playerHasStayed && playerPoints < dealerPoints) {
       isWinner = false
       isGameOver = true;
+      finalMessage = 'YOU LOSE! You have fewer points than the dealer!'
     } else if (playerHasStayed && playerPoints === dealerPoints) {
       isWinner = null
       isGameOver = true;
+      finalMessage = 'TIE! You and the dealer have the same amount of points!'
     } 
 
     const dealerHandString = dealerHand.map(c => c.displayValue).join(' and ');
@@ -71,13 +77,8 @@ var Blackjack = function(passedPlayerHand, passedDealerHand) {
     log(`The Dealer is showing ${dealerHandString} (${dealerPoints}).\n    You are showing ${playerHandString}. (${playerPoints})`);
 
     if (isGameOver) {
-      if (isWinner === null) {
-        log('Tie')
-      } else if (isWinner) {
-        log('You Win!')
-      } else {
-        log('You Lose!')
-      }
+      log(`~~~~~ ${finalMessage} ~~~~~\n--------------------------------------`);
+      resetTable();
     }
 
     return { playerPoints, dealerPoints, isWinner };
@@ -90,19 +91,33 @@ var Blackjack = function(passedPlayerHand, passedDealerHand) {
     return cardObject;
   }
 
-  this.deal = function() {
-    log('-------------------');
-    
+  this.deal = function() {   
     playerHand.push(this.createCardObject());
     playerHand.push(this.createCardObject());
 
     dealerHand.push(this.createCardObject());
 
-    const dealerCard = dealerHand[0];
-    const [playerCardOne, playerCardTwo] =  playerHand;
-
     this.checkTable();
   }
+
+  this.getBlackjackPoints = (blackjackValues) => {
+    let points = blackjackValues.reduce((n, p) => n + p, 0);
+    while (points > 21 && blackjackValues.includes(11)) {
+      
+      // find first 11, change that element in the array into 1
+      blackjackValues.some((el, i, arr) => {
+        if (el === 11) {
+          arr[i] = 1;
+          return true;
+        }
+      });
+
+      // recalculate points
+      points = blackjackValues.reduce((n, p) => n + p, 0);
+    }
+
+    return points;
+  };
   
   this.getBlackjackValue = function(n) {
     if (n <= 10) {
@@ -137,14 +152,18 @@ var Blackjack = function(passedPlayerHand, passedDealerHand) {
 
   this.hit = function() {
     playerHand.push(this.createCardObject());
-
-    const dealerCard = dealerHand[0];
-    const [playerCardOne, playerCardTwo, playerCardThree] =  playerHand;
     this.checkTable();
   }
 
   this.stay = function() {
     dealerHand.push(this.createCardObject());
+    let dealerPoints = this.getBlackjackPoints(dealerHand.map(c => c.blackjackValue));
+
+    // As a general rule, casino rules specify that dealers must draw on "16 or less"
+    while (dealerPoints <= 16) {
+      dealerHand.push(this.createCardObject());
+      dealerPoints = this.getBlackjackPoints(dealerHand.map(c => c.blackjackValue));
+    }
     this.checkTable(true);
   }
 }
