@@ -1,7 +1,3 @@
-/*
-let Blackjack = require('./blackjack'); let game = new Blackjack();
-*/
-
 const Blackjack = require('./blackjack');
 
 const game = new Blackjack();

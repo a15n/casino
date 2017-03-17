@@ -71,6 +71,10 @@ var Blackjack = function() {
     You are showing ${playerHandString}.
     `);
   }
+  function resetTable() {
+    playerHand = [];
+    dealerHand = [];
+  }
   this.checkTable = function(playerHasStayed) {
     const playerPoints = playerHand.reduce((n, c) => n + c.blackjackValue, 0);
     const dealerPoints = dealerHand.reduce((n, c) => n + c.blackjackValue, 0);
@@ -91,10 +95,14 @@ var Blackjack = function() {
       log(`
     Tie
       `)
+    } else {
+      return;
     }
+    resetTable();
   }
   // TODO add controls, so user can't deal twice, hit beyond limit, etc
   this.deal = function() {
+    console.log('    -------------------');
     
     playerHand.push(this.createCardObject());
     playerHand.push(this.createCardObject());
@@ -123,10 +131,5 @@ var Blackjack = function() {
     this.checkTable(true);
   }
 }
-
-// let game = new Blackjack()
-// game.deal()
-// game.hit()
-// game.stay()
 
 module.exports = Blackjack;
