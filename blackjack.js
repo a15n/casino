@@ -71,12 +71,25 @@ var Blackjack = function() {
     You are showing ${playerHandString}.
     `);
   }
-  this.checkTable = function() {
+  this.checkTable = function(playerHasStayed) {
     const playerPoints = playerHand.reduce((n, c) => n + c.blackjackValue, 0);
+    const dealerPoints = dealerHand.reduce((n, c) => n + c.blackjackValue, 0);
     if (playerPoints > 21) {
       // TODO add logic to change the value of any existing aces to 1
       log(`
-    You lost
+    You lose
+      `)
+    } else if (playerHasStayed && playerPoints > dealerPoints) {
+      log(`
+    You win
+      `)
+    } else if (playerHasStayed && playerPoints < dealerPoints) {
+      log(`
+    You lose
+      `)
+    } else if (playerHasStayed && playerPoints === dealerPoints) {
+      log(`
+    Tie
       `)
     }
   }
@@ -103,11 +116,17 @@ var Blackjack = function() {
     this.logTable();
     this.checkTable();
   }
+
+  this.stay = function() {
+    dealerHand.push(this.createCardObject());
+    this.logTable();
+    this.checkTable(true);
+  }
 }
 
-let game = new Blackjack()
-game.deal()
-game.hit()
-game.hit()
+// let game = new Blackjack()
+// game.deal()
+// game.hit()
+// game.stay()
 
 module.exports = Blackjack;
