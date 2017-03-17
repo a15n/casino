@@ -1,9 +1,16 @@
 const Blackjack = require('./blackjack');
-
-// allow calling functions with keypress of 'd', 'h', 's' (and 'ctrl' + 'c')
-// run `node blackjack.js` to sidestep these controls and instead
-// use game.deal(), game.hit(), and game.stay();
 const game = new Blackjack();
+
+
+console.log(`
+Welcome to the blackjack table. Press the following keys to play.
+d -> deal: this will start the game
+h -> hit: this will hit
+s -> stay (stand): this will end your turn and allow the dealer to draw
+q -> quit: you will leave the table
+ctrl + c -> quit
+`)
+
 const readline = require('readline');
 readline.emitKeypressEvents(process.stdin);
 process.stdin.setRawMode(true);
@@ -14,7 +21,7 @@ process.stdin.on('keypress', (str, key) => {
     game.hit();
   } else if (key.name === 's') {
     game.stay();
-  } else if (key.ctrl && key.name === 'c') {
+  } else if (key.name === 'q' || key.ctrl && key.name === 'c') {
     process.kill(process.pid, 'SIGINT')
   }
 });

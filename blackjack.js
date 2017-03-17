@@ -1,8 +1,5 @@
 /*
 TODO
-  console.log better welcome screen, instructions, and reset messaging
-  add 'q' to quit command line interface
-  rename variables to with _someName if "private" but still needed to expose for testing (maybe find other ways)
   add internal controls so user can't deal twice, hit before deal, hit after stay, hit beyond limit, etc
 */
 
@@ -10,8 +7,6 @@ const log = (str) => {
   console.log(`
     ${str}`);
 };
-
-
 
 var Blackjack = function(passedPlayerHand, passedDealerHand) {
   /*
@@ -43,9 +38,36 @@ var Blackjack = function(passedPlayerHand, passedDealerHand) {
   }
 
   // PUBLIC VARIABLES
-  this.checkTable = function(playerHasStayed) {
-    const playerPoints = this.getBlackjackPoints(playerHand.map(c => c.blackjackValue));
-    const dealerPoints = this.getBlackjackPoints(dealerHand.map(c => c.blackjackValue));
+  this.deal = function() {   
+    playerHand.push(this._createCardObject());
+    playerHand.push(this._createCardObject());
+
+    dealerHand.push(this._createCardObject());
+
+    this._checkTable();
+  }
+
+  this.hit = function() {
+    playerHand.push(this._createCardObject());
+    this._checkTable();
+  }
+
+  this.stay = function() {
+    dealerHand.push(this._createCardObject());
+    let dealerPoints = this._getBlackjackPoints(dealerHand.map(c => c.blackjackValue));
+
+    // As a general rule, casino rules specify that dealers must draw on "16 or less"
+    while (dealerPoints <= 16) {
+      dealerHand.push(this._createCardObject());
+      dealerPoints = this._getBlackjackPoints(dealerHand.map(c => c.blackjackValue));
+    }
+    this._checkTable(true);
+  }
+
+  // "PRIVATE" VARIABLES
+  this._checkTable = function(playerHasStayed) {
+    const playerPoints = this._getBlackjackPoints(playerHand.map(c => c.blackjackValue));
+    const dealerPoints = this._getBlackjackPoints(dealerHand.map(c => c.blackjackValue));
     let isWinner = null;
     let isGameOver = false;
     let finalMessage;
@@ -84,23 +106,16 @@ var Blackjack = function(passedPlayerHand, passedDealerHand) {
     return { playerPoints, dealerPoints, isWinner };
   }
 
-  this.createCardObject = function(passedCardObject) {
-    const cardObject = passedCardObject || this.getCard();
-    cardObject.blackjackValue = this.getBlackjackValue(cardObject.number);
-    cardObject.displayValue = this.getDisplayValue(cardObject.number);
+  this._createCardObject = function(passedCardObject) {
+    const cardObject = passedCardObject || this._getCard();
+    cardObject.blackjackValue = this._getBlackjackValue(cardObject.number);
+    cardObject.displayValue = this._getDisplayValue(cardObject.number);
     return cardObject;
   }
 
-  this.deal = function() {   
-    playerHand.push(this.createCardObject());
-    playerHand.push(this.createCardObject());
+  
 
-    dealerHand.push(this.createCardObject());
-
-    this.checkTable();
-  }
-
-  this.getBlackjackPoints = (blackjackValues) => {
+  this._getBlackjackPoints = (blackjackValues) => {
     let points = blackjackValues.reduce((n, p) => n + p, 0);
     while (points > 21 && blackjackValues.includes(11)) {
       
@@ -119,7 +134,7 @@ var Blackjack = function(passedPlayerHand, passedDealerHand) {
     return points;
   };
   
-  this.getBlackjackValue = function(n) {
+  this._getBlackjackValue = function(n) {
     if (n <= 10) {
       return n;
     } else if (n <= 13) {
@@ -129,7 +144,7 @@ var Blackjack = function(passedPlayerHand, passedDealerHand) {
     }
   }
   
-  this.getCard = function() {
+  this._getCard = function() {
     function randomIntFromInterval(min,max) {
       // http://stackoverflow.com/a/7228322/3304337
       return Math.floor(Math.random()*(max-min+1)+min);
@@ -144,27 +159,10 @@ var Blackjack = function(passedPlayerHand, passedDealerHand) {
     }
   };
   
-  this.getDisplayValue = function(n) {
+  this._getDisplayValue = function(n) {
     const displayValueArray = [null, null, 'two', 'three', 'four', 'five', 'six',
         'seven', 'eight', 'nine', 'ten', 'jack', 'queen', 'king', 'ace'];
     return displayValueArray[n];
-  }
-
-  this.hit = function() {
-    playerHand.push(this.createCardObject());
-    this.checkTable();
-  }
-
-  this.stay = function() {
-    dealerHand.push(this.createCardObject());
-    let dealerPoints = this.getBlackjackPoints(dealerHand.map(c => c.blackjackValue));
-
-    // As a general rule, casino rules specify that dealers must draw on "16 or less"
-    while (dealerPoints <= 16) {
-      dealerHand.push(this.createCardObject());
-      dealerPoints = this.getBlackjackPoints(dealerHand.map(c => c.blackjackValue));
-    }
-    this.checkTable(true);
   }
 }
 
