@@ -63,6 +63,23 @@ var Blackjack = function() {
     return cardObject;
   }
 
+  this.logTable = function() {
+    const dealerHandString = dealerHand.map(c => c.displayValue).join(' and ');
+    const playerHandString = playerHand.map(c => c.displayValue).join(' and ');
+    log(`
+    The Dealer is showing ${dealerHandString}.
+    You are showing ${playerHandString}.
+    `);
+  }
+  this.checkTable = function() {
+    const playerPoints = playerHand.reduce((n, c) => n + c.blackjackValue, 0);
+    if (playerPoints > 21) {
+      // TODO add logic to change the value of any existing aces to 1
+      log(`
+    You lost
+      `)
+    }
+  }
   // TODO add controls, so user can't deal twice, hit beyond limit, etc
   this.deal = function() {
     
@@ -73,14 +90,24 @@ var Blackjack = function() {
 
     const dealerCard = dealerHand[0];
     const [playerCardOne, playerCardTwo] =  playerHand;
-    console.log(`
-      The Dealer is showing a ${dealerCard.displayValue}.
 
-      You have a ${playerCardOne.displayValue} and a ${playerCardTwo.displayValue}.
+    this.logTable();
+    this.checkTable();
+  }
 
-      Do you game.hit() or game.stay()? 
-    `);
+  this.hit = function() {
+    playerHand.push(this.createCardObject());
+
+    const dealerCard = dealerHand[0];
+    const [playerCardOne, playerCardTwo, playerCardThree] =  playerHand;
+    this.logTable();
+    this.checkTable();
   }
 }
+
+let game = new Blackjack()
+game.deal()
+game.hit()
+game.hit()
 
 module.exports = Blackjack;
