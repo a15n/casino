@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
+    "start": "node run-blackjack.js",
     "precommit": "yarn test",
     "prepush": "yarn test"
   },

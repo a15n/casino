@@ -1,8 +1,3 @@
-/*
-TODO
-  add internal controls so user can't deal twice, hit before deal, hit after stay, hit beyond limit, etc
-*/
-
 const log = (str) => {
   console.log(`
     ${str}`);
@@ -32,13 +27,19 @@ var Blackjack = function(passedPlayerHand, passedDealerHand) {
   let playerHand = passedPlayerHand || [];
   let dealerHand = passedDealerHand || [];
 
+  let possibleMoves = ['deal'];
+
   function resetTable() {
     playerHand = [];
     dealerHand = [];
   }
 
+
   // PUBLIC VARIABLES
-  this.deal = function() {   
+  this.deal = function() { 
+    if (!this._isValidMove('deal')) { return; } 
+    possibleMoves = ['hit', 'stay'];
+
     playerHand.push(this._createCardObject());
     playerHand.push(this._createCardObject());
 
@@ -48,11 +49,15 @@ var Blackjack = function(passedPlayerHand, passedDealerHand) {
   }
 
   this.hit = function() {
+    if (!this._isValidMove('hit')) { return; }
+    
     playerHand.push(this._createCardObject());
     this._checkTable();
   }
 
   this.stay = function() {
+    if (!this._isValidMove('stay')) { return; }
+
     dealerHand.push(this._createCardObject());
     let dealerPoints = this._getBlackjackPoints(dealerHand.map(c => c.blackjackValue));
 
@@ -96,11 +101,12 @@ var Blackjack = function(passedPlayerHand, passedDealerHand) {
 
     const dealerHandString = dealerHand.map(c => c.displayValue).join(' and ');
     const playerHandString = playerHand.map(c => c.displayValue).join(' and ');
-    log(`The Dealer is showing ${dealerHandString} (${dealerPoints}).\n    You are showing ${playerHandString}. (${playerPoints})`);
+    log(`The Dealer is showing ${dealerHandString} (${dealerPoints}).\n    You are showing ${playerHandString} (${playerPoints}).`);
 
     if (isGameOver) {
       log(`~~~~~ ${finalMessage} ~~~~~\n--------------------------------------`);
       resetTable();
+      possibleMoves = ['deal'];
     }
 
     return { playerPoints, dealerPoints, isWinner };
@@ -163,6 +169,14 @@ var Blackjack = function(passedPlayerHand, passedDealerHand) {
     const displayValueArray = [null, null, 'two', 'three', 'four', 'five', 'six',
         'seven', 'eight', 'nine', 'ten', 'jack', 'queen', 'king', 'ace'];
     return displayValueArray[n];
+  }
+
+  this._isValidMove = function(move) {
+    if (possibleMoves.includes(move)) {
+      return true;
+    }
+    log(`possible moves include ${possibleMoves.join(', ')}`);
+    return false;
   }
 }
 

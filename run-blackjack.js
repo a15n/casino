@@ -4,11 +4,10 @@ const game = new Blackjack();
 
 console.log(`
 Welcome to the blackjack table. Press the following keys to play.
-d -> deal: this will start the game
+d -> deal: this will start a game
 h -> hit: this will hit
 s -> stay (stand): this will end your turn and allow the dealer to draw
 q -> quit: you will leave the table
-ctrl + c -> quit
 `)
 
 const readline = require('readline');
