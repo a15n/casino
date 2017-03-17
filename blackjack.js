@@ -39,6 +39,7 @@ var Blackjack = function() {
   let playerHand = [];
   let dealerHand = [];
 
+  // TODO _underscore some methods to indicate they're private but are still testable
   this.getBlackjackValue = function(n) {
     if (n <= 10) {
       return n;
@@ -61,16 +62,25 @@ var Blackjack = function() {
     cardObject.displayValue = this.getDisplayValue(cardObject.number);
     return cardObject;
   }
-  this.dealInitialCards = function() {
+
+  // TODO add controls, so user can't deal twice, hit beyond limit, etc
+  this.deal = function() {
     
     playerHand.push(this.createCardObject());
     playerHand.push(this.createCardObject());
 
     dealerHand.push(this.createCardObject());
+
+    const dealerCard = dealerHand[0];
+    const [playerCardOne, playerCardTwo] =  playerHand;
+    console.log(`
+      The Dealer is showing a ${dealerCard.displayValue}.
+
+      You have a ${playerCardOne.displayValue} and a ${playerCardTwo.displayValue}.
+
+      Do you game.hit() or game.stay()? 
+    `);
   }
 }
-
-const game = new Blackjack();
-game.dealInitialCards();
 
 module.exports = Blackjack;
