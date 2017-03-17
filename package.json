@@ -4,11 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "precommit": "yarn test",
+    "prepush": "yarn test"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "husky": "^0.13.2",
     "jest": "^19.0.2"
   }
 }
