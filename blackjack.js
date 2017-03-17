@@ -16,7 +16,6 @@ function getCard() {
 var Blackjack = function() {
 
   /*
-
     rules (https://www.youtube.com/watch?v=5bWpnABkU-Y)
     cards 2-10 are worth their face value
     Jack, Queen, King are worth 10
@@ -28,12 +27,36 @@ var Blackjack = function() {
     hit()
       take another card from the dealer
     stand() (aka stay)
-      take no more cards
+      take no more cards. compare values
     split, double, and surrender
       coming soon
   */
 
+  // playerHand is an internal variable and will contain an object
+  // {number, suit, blackjackValue, displayValue}
+  let playerHand = [];
+
+  this.getBlackjackValue = function(n) {
+    if (n <= 10) {
+      return n;
+    } else if (n <= 13) {
+      return 10;
+    } else {
+      return 11; // TODO how to handle the 1/11 choice
+    }
+  }
+
   this.getCard = getCard;
+  this.dealInitialCards = function() {
+    // playerHand
+    
+    const hand = this.getCard();
+    hand.blackjackValue = this.getBlackjackValue(hand.number);
+    console.log(hand);
+  }
 }
+
+const game = new Blackjack();
+game.dealInitialCards();
 
 module.exports = Blackjack;
