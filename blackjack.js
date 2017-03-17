@@ -6,13 +6,11 @@ TODO
   add 'q' to quit command line interface
   rename variables to with _someName if "private" but still needed to expose for testing (maybe find other ways)
   add internal controls so user can't deal twice, hit before deal, hit after stay, hit beyond limit, etc
-  add cumulative numbers to the console. ex: 'You are showing three and four and nine (16)'
 */
 
 const log = (str) => {
   console.log(`
-    ${str}
-  `);
+    ${str}`);
 };
 
 var Blackjack = function(passedPlayerHand, passedDealerHand) {
@@ -52,22 +50,35 @@ var Blackjack = function(passedPlayerHand, passedDealerHand) {
     const playerPoints = getBlackjackPoints(playerHand);
     const dealerPoints = getBlackjackPoints(dealerHand);
     let isWinner = null;
+    let isGameOver = false;
+    
     if (playerPoints > 21) {
-      log('You lose');
       isWinner = false;
-      resetTable()
+      isGameOver = true;
     } else if (playerHasStayed && playerPoints > dealerPoints) {
-      log('You win');
       isWinner = true;
-      resetTable()
+      isGameOver = true;
     } else if (playerHasStayed && playerPoints < dealerPoints) {
-      log('You lose');
       isWinner = false
-      resetTable()
+      isGameOver = true;
     } else if (playerHasStayed && playerPoints === dealerPoints) {
-      log('Tie');
-      resetTable()
+      isWinner = null
+      isGameOver = true;
     } 
+
+    const dealerHandString = dealerHand.map(c => c.displayValue).join(' and ');
+    const playerHandString = playerHand.map(c => c.displayValue).join(' and ');
+    log(`The Dealer is showing ${dealerHandString} (${dealerPoints}).\n    You are showing ${playerHandString}. (${playerPoints})`);
+
+    if (isGameOver) {
+      if (isWinner === null) {
+        log('Tie')
+      } else if (isWinner) {
+        log('You Win!')
+      } else {
+        log('You Lose!')
+      }
+    }
 
     return { playerPoints, dealerPoints, isWinner };
   }
@@ -90,7 +101,6 @@ var Blackjack = function(passedPlayerHand, passedDealerHand) {
     const dealerCard = dealerHand[0];
     const [playerCardOne, playerCardTwo] =  playerHand;
 
-    this.logTable();
     this.checkTable();
   }
   
@@ -130,19 +140,11 @@ var Blackjack = function(passedPlayerHand, passedDealerHand) {
 
     const dealerCard = dealerHand[0];
     const [playerCardOne, playerCardTwo, playerCardThree] =  playerHand;
-    this.logTable();
     this.checkTable();
   }
 
-  this.logTable = function() {
-    const dealerHandString = dealerHand.map(c => c.displayValue).join(' and ');
-    const playerHandString = playerHand.map(c => c.displayValue).join(' and ');
-    log(`The Dealer is showing ${dealerHandString}.\n    You are showing ${playerHandString}.`);
-  }  
-
   this.stay = function() {
     dealerHand.push(this.createCardObject());
-    this.logTable();
     this.checkTable(true);
   }
 }
