@@ -15,7 +15,7 @@ function getCard() {
   }
 }
 
-var Blackjack = function() {
+var Blackjack = function(passedPlayerHand, passedDealerHand) {
 
   /*
     rules (https://www.youtube.com/watch?v=5bWpnABkU-Y)
@@ -30,14 +30,12 @@ var Blackjack = function() {
       take another card from the dealer
     stand() (aka stay)
       take no more cards. compare values
-    split, double, and surrender
-      coming soon
   */
 
-  // playerHand is an internal variable and will contain an object
+  // the ____Hand variables are internal only and will contain an object
   // {number, suit, blackjackValue, displayValue}
-  let playerHand = [];
-  let dealerHand = [];
+  let playerHand = passedPlayerHand || [];
+  let dealerHand = passedDealerHand || [];
 
   // TODO _underscore some methods to indicate they're private but are still testable
   this.getBlackjackValue = function(n) {
@@ -56,8 +54,8 @@ var Blackjack = function() {
   }
 
   this.getCard = getCard;
-  this.createCardObject = function() {
-    const cardObject = this.getCard();
+  this.createCardObject = function(passedCardObject) {
+    const cardObject = passedCardObject || this.getCard();
     cardObject.blackjackValue = this.getBlackjackValue(cardObject.number);
     cardObject.displayValue = this.getDisplayValue(cardObject.number);
     return cardObject;
@@ -78,27 +76,39 @@ var Blackjack = function() {
   this.checkTable = function(playerHasStayed) {
     const playerPoints = playerHand.reduce((n, c) => n + c.blackjackValue, 0);
     const dealerPoints = dealerHand.reduce((n, c) => n + c.blackjackValue, 0);
+    let isWinner = null;
     if (playerPoints > 21) {
       // TODO add logic to change the value of any existing aces to 1
       log(`
     You lose
       `)
+      isWinner = false;
+      resetTable()
     } else if (playerHasStayed && playerPoints > dealerPoints) {
       log(`
     You win
       `)
+      isWinner = true;
+      resetTable()
     } else if (playerHasStayed && playerPoints < dealerPoints) {
       log(`
     You lose
       `)
+      isWinner = false
+      resetTable()
     } else if (playerHasStayed && playerPoints === dealerPoints) {
       log(`
     Tie
       `)
-    } else {
-      return;
+      resetTable()
+    } 
+
+    return {
+      playerPoints,
+      dealerPoints,
+      isWinner,
     }
-    resetTable();
+    
   }
   // TODO add controls, so user can't deal twice, hit beyond limit, etc
   this.deal = function() {
