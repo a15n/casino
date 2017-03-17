@@ -33,5 +33,11 @@ test('getBlackjackValue()', () => {
     const [value, blackjackValue] = arr;
     expect(game.getBlackjackValue(value)).toBe(blackjackValue);
   });
-  
 });
+
+test('getDisplayValue()', () => {
+  expect(game.getDisplayValue(2)).toBe('two');
+  expect(game.getDisplayValue(10)).toBe('ten');
+  expect(game.getDisplayValue(12)).toBe('queen');
+  expect(game.getDisplayValue(14)).toBe('ace');
+})

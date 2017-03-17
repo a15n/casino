@@ -1,3 +1,5 @@
+const log = console.log;
+
 function getCard() {
   function randomIntFromInterval(min,max) {
     // http://stackoverflow.com/a/7228322/3304337
@@ -35,6 +37,7 @@ var Blackjack = function() {
   // playerHand is an internal variable and will contain an object
   // {number, suit, blackjackValue, displayValue}
   let playerHand = [];
+  let dealerHand = [];
 
   this.getBlackjackValue = function(n) {
     if (n <= 10) {
@@ -45,14 +48,25 @@ var Blackjack = function() {
       return 11; // TODO how to handle the 1/11 choice
     }
   }
+  this.getDisplayValue = function(n) {
+    const displayValueArray = [null, null, 'two', 'three', 'four', 'five', 'six',
+        'seven', 'eight', 'nine', 'ten', 'jack', 'queen', 'king', 'ace'];
+    return displayValueArray[n];
+  }
 
   this.getCard = getCard;
+  this.createCardObject = function() {
+    const cardObject = this.getCard();
+    cardObject.blackjackValue = this.getBlackjackValue(cardObject.number);
+    cardObject.displayValue = this.getDisplayValue(cardObject.number);
+    return cardObject;
+  }
   this.dealInitialCards = function() {
-    // playerHand
     
-    const hand = this.getCard();
-    hand.blackjackValue = this.getBlackjackValue(hand.number);
-    console.log(hand);
+    playerHand.push(this.createCardObject());
+    playerHand.push(this.createCardObject());
+
+    dealerHand.push(this.createCardObject());
   }
 }
 
